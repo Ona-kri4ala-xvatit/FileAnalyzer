@@ -9,12 +9,12 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="250"/>
+            <ColumnDefinition Width="280"/>
         </Grid.ColumnDefinitions>
 
         <StackPanel Grid.Column="1" Margin="10">
             <TextBlock Text="Files" Margin="5"/>
-            <ListBox Height="300" Margin="5">
+            <ListBox x:Name="FilesListBox" Height="300" Margin="5" SelectedItem="">
                 <!--SelectedItem-->
             </ListBox>
             <Button Height="40" Margin="5" Content="Analize" FontSize="20"/>

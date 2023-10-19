@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Windows;
 
 namespace FileAnalyzer
@@ -10,20 +11,28 @@ namespace FileAnalyzer
         public MainWindow()
         {
             InitializeComponent();
-            string dir = AppDomain.CurrentDomain.BaseDirectory;
-            string[] files = Directory.GetFiles(dir);
 
-            if(files.Length > 0)
+
+            CheckDirectory();
+        }
+
+
+        private void CheckDirectory()
+        {
+            string directory = AppDomain.CurrentDomain.BaseDirectory;
+
+            List<string> files = new List<string>(Directory.GetFiles(directory));
+
+            foreach (var item in files)
             {
-                foreach (string file in files)
+                if (item.Contains(".json") || item.Contains(".txt"))
                 {
-                    Console.WriteLine(file);
+
+                    FilesListBox.Items.Add(Path.GetFileName(item));
+
                 }
             }
-            else
-            {
-                Console.WriteLine("No files");
-            }
+
         }
     }
 }
