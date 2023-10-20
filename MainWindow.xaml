@@ -13,18 +13,18 @@
 
         <StackPanel Grid.Column="1" Margin="10">
             <TextBlock Text="Files" Margin="5"/>
-            <ListBox x:Name="lb" Height="300" Margin="5" ItemsSource="{Binding Files}" SelectedItem="{Binding SelectedFile}">
+            <ListBox Height="300" Margin="5" ItemsSource="{Binding Files}" SelectedItem="{Binding SelectedFile}">
                 <!--SelectedItem-->
             </ListBox>
-            <Button Height="40" Margin="5" Content="Analize" FontSize="20"/>
+            <Button Height="40" Margin="5" Content="Analize" FontSize="20" Command="{Binding AnalyzeCommand}"/>
         </StackPanel>
 
         <StackPanel Margin="10">
             <StatusBar Height="30" Margin="20"/>
             <Button Height="30" Width="80" Margin="0 0 20 0" HorizontalAlignment="Right" Content="Cancel"/>
-            <TextBlock Height="200" Margin="20">
+            <ListView x:Name="InfoxListBox" Height="260" Margin="20" ItemsSource="{Binding Infos}" FontSize="15">
         <!--Something-->
-            </TextBlock>
+            </ListView>
         </StackPanel>
     </Grid>
 </Window>

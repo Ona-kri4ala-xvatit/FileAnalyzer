@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace FileAnalyzer.ViewModels.Base
 {
-    class ViewModelBase
+    public class ViewModelBase
     {
         public event PropertyChangedEventHandler? PropertyChanged;
 
