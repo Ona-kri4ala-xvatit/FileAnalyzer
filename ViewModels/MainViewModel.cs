@@ -27,11 +27,10 @@ namespace FileAnalyzer.ViewModels
         public CommandBase AnalyzeCommand => analyzeCommand ??= new CommandBase(
             execute: () =>
             {
-                AnalyzeSentences();
+                AnalyzeText();
             },
             canExecute: () => true);
         #endregion
-
 
         public MainViewModel()
         {
@@ -39,6 +38,8 @@ namespace FileAnalyzer.ViewModels
             Infos = new ObservableCollection<MyFileInfo>();
             CheckDirectory();
         }
+
+        #region Methods
         private void CheckDirectory()
         {
             string directory = AppDomain.CurrentDomain.BaseDirectory;
@@ -53,19 +54,23 @@ namespace FileAnalyzer.ViewModels
             }
         }
 
-        private void AnalyzeSentences()
+        private void AnalyzeText()
         {
             if (SelectedFile?.FilePath is null)
                 return;
 
             string text = File.ReadAllText(SelectedFile.FilePath);
 
-            int sentences = text.Split(new char[] { ' ', '\t', '\n', '\r', '\u0022', ':', ',', '=', '.', '{', '}', '[', ']' },
+            int wordsCount = text.Split(new char[] { ' ', '\t', '\n', '\r', '\u0022', ':', ',', '=', '.', '{', '}', '[', ']' },
                 StringSplitOptions.RemoveEmptyEntries).Length;
 
-            Infos?.Clear();
-            Infos?.Add(new MyFileInfo(sentences));
-        }
+            int symbolsCount = text.Replace(" ", string.Empty).Length;
 
+            int sentences = text.Split('.', '!', '?', (char)StringSplitOptions.RemoveEmptyEntries).Length;
+
+            Infos?.Clear();
+            Infos?.Add(new MyFileInfo(wordsCount, symbolsCount, sentences));
+        }
+        #endregion
     }
 }
