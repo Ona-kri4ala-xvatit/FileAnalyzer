@@ -1,12 +1,13 @@
-﻿using System.IO;
-using System;
-using System.Collections.ObjectModel;
+﻿using FileAnalyzer.Commands;
 using FileAnalyzer.Models;
 using FileAnalyzer.ViewModels.Base;
+using System;
+using System.Collections.ObjectModel;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
-using System.Linq;
-using System.Text.Json;
-using FileAnalyzer.Commands;
+using System.Windows.Threading;
 
 namespace FileAnalyzer.ViewModels
 {
@@ -31,6 +32,9 @@ namespace FileAnalyzer.ViewModels
             },
             canExecute: () => true);
         #endregion
+
+        private double progressbarValue;
+        public double ProgressbarValue { get => progressbarValue; set => base.PropertyChangeMethod(out progressbarValue, value); }
 
         public MainViewModel()
         {
@@ -70,6 +74,13 @@ namespace FileAnalyzer.ViewModels
 
             Infos?.Clear();
             Infos?.Add(new MyFileInfo(wordsCount, symbolsCount, sentences));
+
+            new Thread(() =>
+            {
+                Application.Current.Dispatcher.Invoke(() => ProgressbarValue = 50);
+            }).Start();
+
+            
         }
         #endregion
     }

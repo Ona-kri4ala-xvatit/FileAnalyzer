@@ -14,6 +14,7 @@ namespace FileAnalyzer
         {
             InitializeComponent();
             DataContext = new MainViewModel();
+            pgb.Value = 50;
         }
     }
 }
