@@ -1,10 +1,6 @@
 ﻿using FileAnalyzer.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.IO;
+using System.Threading;
 using System.Windows;
-using System.Windows.Controls;
 
 namespace FileAnalyzer
 {
@@ -14,7 +10,16 @@ namespace FileAnalyzer
         {
             InitializeComponent();
             DataContext = new MainViewModel();
-            pgb.Value = 50;
+
+            //new Thread(() =>
+            //{
+            //    for (int i = 0; i < 100; i++)
+            //    {
+            //        Dispatcher.Invoke(() => this.pgb.Value += i);
+            //        Thread.Sleep(200);
+            //    }
+            //}).Start();
+            
         }
     }
 }

@@ -33,8 +33,8 @@ namespace FileAnalyzer.ViewModels
             canExecute: () => true);
         #endregion
 
-        private double progressbarValue;
-        public double ProgressbarValue { get => progressbarValue; set => base.PropertyChangeMethod(out progressbarValue, value); }
+        private double progressBarValue;
+        public double ProgressBarValue { get => progressBarValue; set => base.PropertyChangeMethod(out progressBarValue, value); }
 
         public MainViewModel()
         {
@@ -77,10 +77,12 @@ namespace FileAnalyzer.ViewModels
 
             new Thread(() =>
             {
-                Application.Current.Dispatcher.Invoke(() => ProgressbarValue = 50);
-            }).Start();
+            for (int i = 0; i < 100; i++) 
+            {
+                ProgressBarValue += i;
+            }
 
-            
+            }).Start();
         }
         #endregion
     }
