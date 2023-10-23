@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace FileAnalyzer.ViewModels.Base
+namespace FileAnalyzer.Base
 {
     public class ViewModelBase
     {
@@ -11,9 +11,9 @@ namespace FileAnalyzer.ViewModels.Base
         {
             prop = value;
 
-            if (this.PropertyChanged != null)
+            if (PropertyChanged != null)
             {
-                this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propName));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propName));
             }
         }
     }

@@ -14,14 +14,18 @@
         <StackPanel Grid.Column="1" Margin="10">
             <TextBlock Text="Files" Margin="5"/>
             <ListBox Height="300" Margin="5" ItemsSource="{Binding Files}" SelectedItem="{Binding SelectedFile}"/>
-            <Button Height="40" Margin="5" Content="Analize" FontSize="20" Command="{Binding AnalyzeCommand}"/>
+            <Button Height="40" Margin="5" Content="Analize" FontSize="20" Command="{Binding StartCommand}"/>
         </StackPanel>
 
         <StackPanel Margin="10">
-            <ProgressBar x:Name="pgb" Height="30" Margin="20" Value="{Binding ProgressbarValue}" Maximum="100"/>
-            <Button Height="30" Width="80" Margin="0 0 20 0" HorizontalAlignment="Right" Content="Cancel"/>
+            <ProgressBar x:Name="pgb" Height="30" Margin="20" Value="{Binding Value}" Minimum="0" Maximum="100"/>
+            <!--<Button Height="30" Width="80" Margin="0 0 20 0" HorizontalAlignment="Right" Content="Cancel" Command="{Binding StartCommand}"/>-->
+            
+            <!--<TextBlock FontSize="30" Text="{Binding Value}" VerticalAlignment="Center"></TextBlock>
+            <Button Command="{Binding StartCommand}">Start</Button>
+            <Button Command="{Binding StopCommand}">Stop</Button>-->
+            
             <ListView x:Name="InfoxListBox" Height="260" Margin="20" ItemsSource="{Binding Infos}" FontSize="15"/>
-
         </StackPanel>
     </Grid>
 </Window>
