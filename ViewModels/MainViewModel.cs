@@ -5,14 +5,13 @@ using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Threading;
-using System.Windows.Input;
+using System.Threading.Tasks;
 
 namespace FileAnalyzer.ViewModels
 {
     public class MainViewModel : ViewModelBase
     {
         private Thread thread;
-        private CancellationTokenSource tokenSource;
 
         #region Properties   
         public ObservableCollection<MyFile> Files { get; set; } = new ObservableCollection<MyFile>();
@@ -28,28 +27,18 @@ namespace FileAnalyzer.ViewModels
         {
             get => progressBarValue;
             set => PropertyChangeMethod(out progressBarValue, value);
-            //if (value == progressBarValue) return;
-            //progressBarValue = value;
+            if (value == progressBarValue) return;
+            progressBarValue = value;
         }
         #endregion
 
         #region Commands
         private CommandBase? analyzeCommand;
         public CommandBase AnalyzeCommand => analyzeCommand ??= new CommandBase(
-            execute: () =>
+            execute: async () =>
             {
-                tokenSource = new CancellationTokenSource();
-                thread = new Thread(Worker) 
-                { 
-                    IsBackground = true 
-                };
-                thread.Start(tokenSource.Token);
-
-                //tokenSource.Cancel();
-                tokenSource = null;
-                thread = null;
+                await AnalyzeText();
             },
-            
             canExecute: () => true);
         #endregion
 
@@ -61,14 +50,31 @@ namespace FileAnalyzer.ViewModels
         }
 
         #region Methods
-        private void Worker(object state)
+        private async Task AnalyzeText()
         {
-            var token = (CancellationToken)state;
-            while (!token.IsCancellationRequested)
+            while (ProgressBarValue != 100)
             {
                 ProgressBarValue++;
-                Thread.Sleep(20);
+                await Task.Delay(20);
             }
+      
+            if (SelectedFile?.FilePath is null)
+                return;
+
+            string text = File.ReadAllText(SelectedFile.FilePath);
+
+            int wordsCount = text.Split(new char[] { ' ', '\t', '\n', '\r', '\u0022', ':', ',', '=', '.', '{', '}', '[', ']' },
+                StringSplitOptions.RemoveEmptyEntries).Length;
+
+            int symbolsCount = text.Replace(" ", string.Empty).Length;
+
+            int sentences = text.Split('.', '!', '?', (char)StringSplitOptions.RemoveEmptyEntries).Length;
+
+            //Infos?.Clear();
+            Infos?.Add(new MyFileInfo(wordsCount, symbolsCount, sentences));
+
+            await Task.Delay(50);
+            ProgressBarValue = 0;
         }
 
         private void CheckDirectory()
@@ -83,26 +89,6 @@ namespace FileAnalyzer.ViewModels
                     Files.Add(new MyFile(Path.GetFullPath(item), Path.GetFileName(item)));
                 }
             }
-        }
-
-        private void AnalyzeText()
-        {
-            if (SelectedFile?.FilePath is null)
-                return;
-
-            string text = File.ReadAllText(SelectedFile.FilePath);
-
-            int wordsCount = text.Split(new char[] { ' ', '\t', '\n', '\r', '\u0022', ':', ',', '=', '.', '{', '}', '[', ']' },
-                StringSplitOptions.RemoveEmptyEntries).Length;
-
-            int symbolsCount = text.Replace(" ", string.Empty).Length;
-
-            int sentences = text.Split('.', '!', '?', (char)StringSplitOptions.RemoveEmptyEntries).Length;
-
-            Infos?.Clear();
-            Infos?.Add(new MyFileInfo(wordsCount, symbolsCount, sentences));
-
-            //this.ProgressBarValue = 0;
         }
         #endregion
     }
