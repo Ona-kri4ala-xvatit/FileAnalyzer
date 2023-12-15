@@ -11,10 +11,9 @@ namespace FileAnalyzer.ViewModels
 {
     public class MainViewModel : ViewModelBase
     {
-        private Thread thread;
-
+        private CancellationTokenSource? tokenSource;
         #region Properties   
-        public ObservableCollection<MyFile> Files { get; set; } = new ObservableCollection<MyFile>();
+        public ObservableCollection<MyFile> Files { get; set; }
 
         public ObservableCollection<MyFileInfo>? infos;
         public ObservableCollection<MyFileInfo>? Infos { get => infos; set => base.PropertyChangeMethod(out infos, value); }
@@ -23,13 +22,7 @@ namespace FileAnalyzer.ViewModels
         public MyFile? SelectedFile { get => selectedFile; set => base.PropertyChangeMethod(out selectedFile, value); }
 
         private int progressBarValue;
-        public int ProgressBarValue
-        {
-            get => progressBarValue;
-            set => PropertyChangeMethod(out progressBarValue, value);
-            if (value == progressBarValue) return;
-            progressBarValue = value;
-        }
+        public int ProgressBarValue { get => progressBarValue; set => PropertyChangeMethod(out progressBarValue, value); }
         #endregion
 
         #region Commands
@@ -37,27 +30,58 @@ namespace FileAnalyzer.ViewModels
         public CommandBase AnalyzeCommand => analyzeCommand ??= new CommandBase(
             execute: async () =>
             {
-                await AnalyzeText();
+                tokenSource = new CancellationTokenSource();
+                await CheckerState(tokenSource.Token);
+            },
+            canExecute: () => true);
+
+        private CommandBase? cancelCommand;
+        public CommandBase CancelCommand => cancelCommand ??= new CommandBase(
+            execute: () =>
+            {
+                tokenSource?.Cancel();
+                if(cancelCommand is not null)
+                    tokenSource = null;
             },
             canExecute: () => true);
         #endregion
 
         public MainViewModel()
         {
+            Files = new ObservableCollection<MyFile>();
             SelectedFile = new MyFile();
             Infos = new ObservableCollection<MyFileInfo>();
             CheckDirectory();
         }
 
         #region Methods
-        private async Task AnalyzeText()
+        private async Task CheckerState(object state)
         {
-            while (ProgressBarValue != 100)
+            var token = (CancellationToken)state;
+
+            while (!token.IsCancellationRequested)
             {
-                ProgressBarValue++;
-                await Task.Delay(20);
+                if (ProgressBarValue != 100)
+                {
+                    ProgressBarValue++;
+                    await Task.Delay(20);
+                }
+                else
+                {
+                    tokenSource.Cancel();
+                    AnalyzeText();
+                }
+
+                if (token.IsCancellationRequested == true)
+                {
+                    await Task.Delay(100);
+                    ProgressBarValue = 0;
+                }
             }
-      
+        }
+
+        private void AnalyzeText()
+        {
             if (SelectedFile?.FilePath is null)
                 return;
 
@@ -72,9 +96,6 @@ namespace FileAnalyzer.ViewModels
 
             //Infos?.Clear();
             Infos?.Add(new MyFileInfo(wordsCount, symbolsCount, sentences));
-
-            await Task.Delay(50);
-            ProgressBarValue = 0;
         }
 
         private void CheckDirectory()
